@@ -3,7 +3,7 @@ export default function Home() {
   // Examples:
   // - Full URL: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
   // - Video ID: 'dQw4w9WgXcQ'
-  const youtubeUrlOrId = "https://www.youtube.com/watch?v=Zq_XHW4ChUo";
+  const youtubeUrlOrId = "https://youtu.be/LiD1bmkhSyI";
 
   // Extract video ID from URL or use as-is if it's already an ID
   const getVideoId = (input: string): string => {
