@@ -2,7 +2,29 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Set Up Supabase
+
+1. Create a Supabase project at [https://supabase.com](https://supabase.com)
+2. Get your API credentials from Project Settings → API
+3. Copy `env.example` to `.env.local`:
+   ```bash
+   cp env.example .env.local
+   ```
+4. Fill in your Supabase credentials in `.env.local`:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   ```
+
+For detailed Supabase setup instructions, see [lib/supabase/README.md](lib/supabase/README.md).
+
+### 3. Run the Development Server
 
 ```bash
 npm run dev
