@@ -28,7 +28,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export async function createServerClient() {
   const cookieStore = await cookies();
 
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  // TypeScript assertion: we've already checked these are defined above
+  return createClient(supabaseUrl!, supabaseAnonKey!, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

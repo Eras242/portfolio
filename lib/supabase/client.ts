@@ -26,4 +26,5 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Create a single supabase client for interacting with your database
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// TypeScript assertion: we've already checked these are defined above
+export const supabase = createClient(supabaseUrl!, supabaseAnonKey!);
