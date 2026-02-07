@@ -7,24 +7,14 @@ import { supabase } from "./client";
  * @returns Public URL for the file
  */
 export function getPublicUrl(bucketName: string, fileName: string): string {
-  try {
-    const { data, error } = supabase.storage.from(bucketName).getPublicUrl(fileName);
-    
-    if (error) {
-      console.error(`Error getting public URL for ${fileName} from bucket ${bucketName}:`, error);
-      throw error;
-    }
-    
-    if (!data?.publicUrl) {
-      throw new Error(`No public URL returned for ${fileName} from bucket ${bucketName}`);
-    }
-    
-    console.log(`Generated URL for ${fileName}:`, data.publicUrl);
-    return data.publicUrl;
-  } catch (error) {
-    console.error(`Failed to get public URL for ${fileName}:`, error);
-    throw error;
+  const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
+  
+  if (!data?.publicUrl) {
+    throw new Error(`No public URL returned for ${fileName} from bucket ${bucketName}`);
   }
+  
+  console.log(`Generated URL for ${fileName}:`, data.publicUrl);
+  return data.publicUrl;
 }
 
 /**
