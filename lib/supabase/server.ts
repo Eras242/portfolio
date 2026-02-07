@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 // Support both variable names for the anon key
@@ -24,27 +23,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Create a server-side supabase client with cookie-based authentication
-export async function createServerClient() {
-  const cookieStore = await cookies();
-
+// Create a server-side supabase client
+// For public storage access, we don't need cookie-based authentication
+export function createServerClient() {
   // TypeScript assertion: we've already checked these are defined above
-  return createClient(supabaseUrl!, supabaseAnonKey!, {
-    cookies: {
-      getAll() {
-        return cookieStore.getAll();
-      },
-      setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          );
-        } catch {
-          // The `setAll` method was called from a Server Component.
-          // This can be ignored if you have middleware refreshing
-          // user sessions.
-        }
-      },
-    },
-  });
+  return createClient(supabaseUrl!, supabaseAnonKey!);
 }

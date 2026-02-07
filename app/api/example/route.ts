@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 // Example API route showing how to use Supabase on the server
 export async function GET() {
   try {
-    const supabase = await createServerClient();
+    const supabase = createServerClient();
     
     // Example query - replace with your actual table name
     // const { data, error } = await supabase
