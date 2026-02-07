@@ -8,11 +8,13 @@ import { supabase } from "./client";
  */
 export function getPublicUrl(bucketName: string, fileName: string): string {
   const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
-  
+
   if (!data?.publicUrl) {
-    throw new Error(`No public URL returned for ${fileName} from bucket ${bucketName}`);
+    throw new Error(
+      `No public URL returned for ${fileName} from bucket ${bucketName}`
+    );
   }
-  
+
   console.log(`Generated URL for ${fileName}:`, data.publicUrl);
   return data.publicUrl;
 }
@@ -23,12 +25,13 @@ export function getPublicUrl(bucketName: string, fileName: string): string {
  * @returns Object with desktop video URL and mobile poster image URL
  */
 export function getVideoUrls(
-  bucketName: string = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "videos"
+  bucketName: string = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ||
+    "videos"
 ) {
   console.log(`Fetching assets from bucket: ${bucketName}`);
-  
+
   const desktopUrl = getPublicUrl(bucketName, "desktopVideo.mp4");
-  const mobilePosterUrl = getPublicUrl(bucketName, "mobilePoster.png");
+  const mobilePosterUrl = getPublicUrl(bucketName, "mobileGif.gif");
 
   return {
     desktop: desktopUrl,
