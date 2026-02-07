@@ -6,26 +6,42 @@ import { supabase } from "./client";
  * @param fileName - Name of the file (e.g., 'desktopVideo.mp4')
  * @returns Public URL for the file
  */
-export async function getPublicUrl(bucketName: string, fileName: string) {
-  const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
-  return data.publicUrl;
+export function getPublicUrl(bucketName: string, fileName: string): string {
+  try {
+    const { data, error } = supabase.storage.from(bucketName).getPublicUrl(fileName);
+    
+    if (error) {
+      console.error(`Error getting public URL for ${fileName} from bucket ${bucketName}:`, error);
+      throw error;
+    }
+    
+    if (!data?.publicUrl) {
+      throw new Error(`No public URL returned for ${fileName} from bucket ${bucketName}`);
+    }
+    
+    console.log(`Generated URL for ${fileName}:`, data.publicUrl);
+    return data.publicUrl;
+  } catch (error) {
+    console.error(`Failed to get public URL for ${fileName}:`, error);
+    throw error;
+  }
 }
 
 /**
- * Get public URLs for both desktop and mobile videos
- * @param bucketName - Name of the storage bucket containing the videos (defaults to env var or "videos")
- * @returns Object with desktop and mobile video URLs
+ * Get public URLs for desktop video and mobile poster image
+ * @param bucketName - Name of the storage bucket containing the assets (defaults to env var or "videos")
+ * @returns Object with desktop video URL and mobile poster image URL
  */
-export async function getVideoUrls(
+export function getVideoUrls(
   bucketName: string = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "videos"
 ) {
-  const [desktopUrl, mobileUrl] = await Promise.all([
-    getPublicUrl(bucketName, "desktopVideo.mp4"),
-    getPublicUrl(bucketName, "mobileVideo.mp4"),
-  ]);
+  console.log(`Fetching assets from bucket: ${bucketName}`);
+  
+  const desktopUrl = getPublicUrl(bucketName, "desktopVideo.mp4");
+  const mobilePosterUrl = getPublicUrl(bucketName, "mobilePoster.png");
 
   return {
     desktop: desktopUrl,
-    mobile: mobileUrl,
+    mobile: mobilePosterUrl,
   };
 }
