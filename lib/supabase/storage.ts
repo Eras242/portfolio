@@ -20,21 +20,32 @@ export function getPublicUrl(bucketName: string, fileName: string): string {
 }
 
 /**
- * Get public URLs for desktop video and mobile poster image
+ * Get public URLs for all assets (videos, gifs, and poster images)
  * @param bucketName - Name of the storage bucket containing the assets (defaults to env var or "videos")
- * @returns Object with desktop video URL and mobile poster image URL
+ * @returns Object with all asset URLs
  */
-export function getVideoUrls(
+export function getAssetUrls(
   bucketName: string = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ||
     "videos"
 ) {
   console.log(`Fetching assets from bucket: ${bucketName}`);
 
-  const desktopUrl = getPublicUrl(bucketName, "desktopVideo.mp4");
-  const mobilePosterUrl = getPublicUrl(bucketName, "mobileGif.gif");
-
   return {
-    desktop: desktopUrl,
-    mobile: mobilePosterUrl,
+    desktopVideo: getPublicUrl(bucketName, "desktopVideo.mp4"),
+    desktopPoster: getPublicUrl(bucketName, "desktopPoster.png"),
+    mobileGif: getPublicUrl(bucketName, "mobileGif.gif"),
+    mobilePoster: getPublicUrl(bucketName, "mobilePoster.png"),
+  };
+}
+
+// Keep for backwards compatibility
+export function getVideoUrls(
+  bucketName: string = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ||
+    "videos"
+) {
+  const assets = getAssetUrls(bucketName);
+  return {
+    desktop: assets.desktopVideo,
+    mobile: assets.mobileGif,
   };
 }

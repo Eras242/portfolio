@@ -1,15 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { getVideoUrls } from "@/lib/supabase/storage";
+import { getAssetUrls } from "@/lib/supabase/storage";
+
+interface AssetUrls {
+  desktopVideo: string | null;
+  desktopPoster: string | null;
+  mobileGif: string | null;
+  mobilePoster: string | null;
+}
 
 export default function Home() {
-  const [videoUrls, setVideoUrls] = useState<{
-    desktop: string | null;
-    mobile: string | null;
-  }>({ desktop: null, mobile: null });
+  const [assetUrls, setAssetUrls] = useState<AssetUrls>({
+    desktopVideo: null,
+    desktopPoster: null,
+    mobileGif: null,
+    mobilePoster: null,
+  });
   const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [desktopVideoLoaded, setDesktopVideoLoaded] = useState(false);
+  const [mobileGifLoaded, setMobileGifLoaded] = useState(false);
   const desktopVideoRef = useRef<HTMLVideoElement>(null);
   const hasInteractedRef = useRef(false);
 
@@ -25,22 +36,22 @@ export default function Home() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Fetch video URLs from Supabase
+  // Fetch asset URLs from Supabase
   useEffect(() => {
-    const fetchVideos = () => {
+    const fetchAssets = () => {
       try {
         // Uses bucket name from env var NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET or defaults to "videos"
-        const urls = getVideoUrls();
-        console.log("Fetched video URLs:", urls);
-        setVideoUrls(urls);
+        const urls = getAssetUrls();
+        console.log("Fetched asset URLs:", urls);
+        setAssetUrls(urls);
       } catch (error) {
-        console.error("Error fetching videos from Supabase:", error);
+        console.error("Error fetching assets from Supabase:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchVideos();
+    fetchAssets();
   }, []);
 
   // Function to start video playback (desktop only)
@@ -57,7 +68,7 @@ export default function Home() {
 
   // Handle video loading and autoplay (desktop only)
   useEffect(() => {
-    if (isLoading || !videoUrls.desktop || isMobile) return;
+    if (isLoading || !assetUrls.desktopVideo || isMobile) return;
 
     // Try to play desktop video
     if (desktopVideoRef.current) {
@@ -73,7 +84,7 @@ export default function Home() {
         });
       }
     }
-  }, [isLoading, videoUrls.desktop, isMobile]);
+  }, [isLoading, assetUrls.desktopVideo, isMobile]);
 
   // Handle user interaction to start playback if autoplay was blocked
   useEffect(() => {
@@ -106,16 +117,33 @@ export default function Home() {
 
   return (
     <div
-      className="fixed inset-0 h-screen w-screen overflow-hidden"
+      className="fixed inset-0 h-screen w-screen overflow-hidden bg-black"
       onClick={startPlayback}
       onTouchStart={startPlayback}
     >
+      {/* Desktop Poster (placeholder while video loads) */}
+      {assetUrls.desktopPoster && (
+        <img
+          src={assetUrls.desktopPoster}
+          alt="Desktop background placeholder"
+          className={`absolute left-1/2 top-1/2 h-[56.25vw] min-h-full min-w-full w-[177.78vh] -translate-x-1/2 -translate-y-1/2 hidden md:block transition-opacity duration-500 ${
+            desktopVideoLoaded ? "opacity-0" : "opacity-100"
+          }`}
+          style={{
+            objectFit: "cover",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
       {/* Desktop Video */}
-      {videoUrls.desktop && (
+      {assetUrls.desktopVideo && (
         <video
           ref={desktopVideoRef}
-          src={videoUrls.desktop}
-          className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full min-w-full w-[177.78vh] -translate-x-1/2 -translate-y-1/2 hidden md:block"
+          src={assetUrls.desktopVideo}
+          className={`absolute left-1/2 top-1/2 h-[56.25vw] min-h-full min-w-full w-[177.78vh] -translate-x-1/2 -translate-y-1/2 hidden md:block transition-opacity duration-500 ${
+            desktopVideoLoaded ? "opacity-100" : "opacity-0"
+          }`}
           autoPlay
           loop
           muted
@@ -135,37 +163,59 @@ export default function Home() {
           }}
           onLoadedData={() => {
             console.log("Desktop video loaded successfully");
+            setDesktopVideoLoaded(true);
           }}
         />
       )}
 
-      {/* Mobile Poster Image */}
-      {videoUrls.mobile && (
+      {/* Mobile Poster (placeholder while gif loads) */}
+      {assetUrls.mobilePoster && (
         <img
-          src={videoUrls.mobile}
+          src={assetUrls.mobilePoster}
+          alt="Mobile background placeholder"
+          className={`absolute left-1/2 top-1/2 h-[56.25vw] min-h-full min-w-full w-[177.78vh] -translate-x-1/2 -translate-y-1/2 block md:hidden transition-opacity duration-500 ${
+            mobileGifLoaded ? "opacity-0" : "opacity-100"
+          }`}
+          style={{
+            objectFit: "cover",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      {/* Mobile GIF */}
+      {assetUrls.mobileGif && (
+        <img
+          src={assetUrls.mobileGif}
           alt="Mobile background"
-          className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full min-w-full w-[177.78vh] -translate-x-1/2 -translate-y-1/2 block md:hidden"
+          className={`absolute left-1/2 top-1/2 h-[56.25vw] min-h-full min-w-full w-[177.78vh] -translate-x-1/2 -translate-y-1/2 block md:hidden transition-opacity duration-500 ${
+            mobileGifLoaded ? "opacity-100" : "opacity-0"
+          }`}
           style={{
             objectFit: "cover",
             pointerEvents: "none",
           }}
           onError={(e) => {
-            console.error("Mobile poster image error:", {
+            console.error("Mobile GIF error:", {
               src: e.currentTarget.src,
             });
           }}
           onLoad={() => {
-            console.log("Mobile poster image loaded successfully");
+            console.log("Mobile GIF loaded successfully");
+            setMobileGifLoaded(true);
           }}
         />
       )}
 
       {/* Fallback if assets fail to load */}
-      {!videoUrls.desktop && !videoUrls.mobile && (
-        <div className="fixed inset-0 h-screen w-screen flex items-center justify-center bg-black">
-          <div className="text-white">Error loading assets</div>
-        </div>
-      )}
+      {!assetUrls.desktopVideo &&
+        !assetUrls.mobileGif &&
+        !assetUrls.desktopPoster &&
+        !assetUrls.mobilePoster && (
+          <div className="fixed inset-0 h-screen w-screen flex items-center justify-center bg-black">
+            <div className="text-white">Error loading assets</div>
+          </div>
+        )}
     </div>
   );
 }
