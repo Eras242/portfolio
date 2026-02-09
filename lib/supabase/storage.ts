@@ -26,15 +26,15 @@ export function getPublicUrl(bucketName: string, fileName: string): string {
  */
 export function getAssetUrls(
   bucketName: string = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ||
-    "videos"
+    "assets"
 ) {
   console.log(`Fetching assets from bucket: ${bucketName}`);
 
   return {
     desktopVideo: getPublicUrl(bucketName, "desktopVideo.mp4"),
-    desktopPoster: getPublicUrl(bucketName, "desktopPoster.png"),
+    desktopPoster: getPublicUrl(bucketName, "desktopPoster.jpg"),
     mobileGif: getPublicUrl(bucketName, "mobileGif.gif"),
-    mobilePoster: getPublicUrl(bucketName, "mobilePoster.png"),
+    mobilePoster: getPublicUrl(bucketName, "mobilePoster.jpg"),
   };
 }
 

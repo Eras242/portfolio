@@ -8,12 +8,12 @@ import { supabase } from "../supabase/client";
  */
 export async function getAllFromTable<T>(tableName: string) {
   const { data, error } = await supabase.from(tableName).select("*");
-  
+
   if (error) {
     console.error(`Error fetching from ${tableName}:`, error);
     throw error;
   }
-  
+
   return data as T[];
 }
 
@@ -26,12 +26,12 @@ export async function getById<T>(tableName: string, id: string) {
     .select("*")
     .eq("id", id)
     .single();
-  
+
   if (error) {
     console.error(`Error fetching ${tableName} by id:`, error);
     throw error;
   }
-  
+
   return data as T;
 }
 
@@ -44,12 +44,12 @@ export async function insertRow<T>(tableName: string, row: Partial<T>) {
     .insert(row)
     .select()
     .single();
-  
+
   if (error) {
     console.error(`Error inserting into ${tableName}:`, error);
     throw error;
   }
-  
+
   return data as T;
 }
 
@@ -67,12 +67,12 @@ export async function updateRow<T>(
     .eq("id", id)
     .select()
     .single();
-  
+
   if (error) {
     console.error(`Error updating ${tableName}:`, error);
     throw error;
   }
-  
+
   return data as T;
 }
 
@@ -81,11 +81,11 @@ export async function updateRow<T>(
  */
 export async function deleteRow(tableName: string, id: string) {
   const { error } = await supabase.from(tableName).delete().eq("id", id);
-  
+
   if (error) {
     console.error(`Error deleting from ${tableName}:`, error);
     throw error;
   }
-  
+
   return true;
 }
